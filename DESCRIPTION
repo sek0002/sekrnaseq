@@ -34,3 +34,5 @@ Imports:
     enrichplot,
     DOSE,
     gridExtra
+URL: https://github.com/sek0002/sekrnaseq
+BugReports: https://github.com/sek0002/sekrnaseq/issues
