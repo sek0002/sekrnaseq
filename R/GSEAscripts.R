@@ -47,11 +47,11 @@ gseatest <- function(input,method,species,orderby="logFC",cat =NULL, subcat = NU
                            human = msigdbr(species = "Homo sapiens"),
                            mouse = msigdbr(species = "Mus musculus"))
     if (is.null(subcat)) {
-      gseapathways<-gseapathways%>% dplyr::filter(gs_cat == cat ) %>% dplyr::select(gs_name, gene_symbol) %>% na.omit() %>% distinct()
+      gseapathways<-gseapathways%>% dplyr::filter(gs_cat == cat ) %>% dplyr::select(gs_name, gene_symbol)
     } else{
-      gseapathways<-gseapathways%>% dplyr::filter(gs_cat == cat & gs_subcat %in% subcat) %>% dplyr::select(gs_name, gene_symbol) %>% na.omit() %>% distinct()
+      gseapathways<-gseapathways%>% dplyr::filter(gs_cat == cat & gs_subcat %in% subcat) %>% dplyr::select(gs_name, gene_symbol)
     }} else {
-      gseapathways<-customGS %>% dplyr::select(gs_name, gene_symbol) %>% na.omit() %>% distinct()
+      gseapathways<-customGS %>% dplyr::select(gs_name, gene_symbol)
     }
 
 
