@@ -68,7 +68,7 @@ gseatest <- function(input,method,species,orderby="logFC",cat =NULL, subcat = NU
   )
 
 
-  names(ranks) <- as.character(gseaDat$SYMBOL)
+  names(ranks) <- as.character(gseaDat$SYMBOL) %>% na.omit()
   geneList <- sort(ranks,decreasing = T)
   barplot(geneList)
   head(geneList)
