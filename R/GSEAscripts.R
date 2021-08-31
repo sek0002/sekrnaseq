@@ -20,7 +20,7 @@
 #' @export
 
 
-gseatest <- function(input,method,species,orderby="logFC",cat =NULL, subcat = NULL, nPerm=1000, minGSSize=15, maxGSSize=500, pvalueCutoff= 0.05, by="fgsea", plotpathway=NULL, expname, DEgroup, showCategory=20, customGS=NULL, plot=F, ...){
+gseatest <- function(input,method,species,orderby="logFC",cat =NULL, subcat = NULL, minGSSize=15, maxGSSize=500, pvalueCutoff= 0.05, by="fgsea", plotpathway=NULL, expname, DEgroup, showCategory=20, customGS=NULL, plot=F, ...){
   if (is.null(input)){
     stop('no input gene list provided')}
   else if (is.null(cat)){
@@ -47,17 +47,17 @@ gseatest <- function(input,method,species,orderby="logFC",cat =NULL, subcat = NU
                            human = msigdbr(species = "Homo sapiens"),
                            mouse = msigdbr(species = "Mus musculus"))
     if (is.null(subcat)) {
-      gseapathways<-gseapathways%>% dplyr::filter(gs_cat == cat ) %>% dplyr::select(gs_name, gene_symbol)
+      gseapathways<-gseapathways%>% dplyr::filter(gs_cat == cat ) %>% dplyr::select(gs_name, gene_symbol) %>% na.omit() %>% distinct()
     } else{
-      gseapathways<-gseapathways%>% dplyr::filter(gs_cat == cat & gs_subcat %in% subcat) %>% dplyr::select(gs_name, gene_symbol)
+      gseapathways<-gseapathways%>% dplyr::filter(gs_cat == cat & gs_subcat %in% subcat) %>% dplyr::select(gs_name, gene_symbol) %>% na.omit() %>% distinct()
     }} else {
-      gseapathways<-customGS %>% dplyr::select(gs_name, gene_symbol)
+      gseapathways<-customGS %>% dplyr::select(gs_name, gene_symbol) %>% na.omit() %>% distinct()
     }
 
 
   gseaDat <- switch(method,
-                    edger =   input[["qlf_file"]][[DEgroup]][["EdgeR.res"]],
-                    voom =   input[["voom_file"]][[DEgroup]][["limma.res"]])
+                    edger =   input[["qlf_file"]][[DEgroup]][["EdgeR.res"]] %>% na.omit(),
+                    voom =   input[["voom_file"]][[DEgroup]][["limma.res"]] %>% na.omit())
 
   ranks <- switch(orderby,
                   logFC = gseaDat$logFC,
@@ -75,21 +75,21 @@ gseatest <- function(input,method,species,orderby="logFC",cat =NULL, subcat = NU
 
   results<-GSEA(geneList=geneList,
                 TERM2GENE=gseapathways,
-                nPerm = nPerm,
                 verbose=TRUE,
                 minGSSize =  minGSSize,
                 maxGSSize = maxGSSize,
                 pvalueCutoff = pvalueCutoff,
-                by=by)
+                by=by,
+                eps=0.0)
 
   results_all<-GSEA(geneList=geneList,
                     TERM2GENE=gseapathways,
-                    nPerm = nPerm,
                     verbose=TRUE,
                     minGSSize =  minGSSize,
                     maxGSSize = maxGSSize,
                     pvalueCutoff = 1,
-                    by=by)
+                    by=by,
+                    eps=0.0)
 
   write.table(results_all, file=paste0("GSEA/",expname,"/",DEgroup,"_","GSEA_results_all.tsv"),row.names = FALSE, sep="\t")
 
