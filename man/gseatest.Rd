@@ -11,7 +11,6 @@ gseatest(
   orderby = "logFC",
   cat = NULL,
   subcat = NULL,
-  nPerm = 1000,
   minGSSize = 15,
   maxGSSize = 500,
   pvalueCutoff = 0.05,
