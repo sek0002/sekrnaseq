@@ -24,9 +24,9 @@
 ##interactive correlation plots between two tables
 corrplot <- function(frame1, frame2, com_col, FCcol, FDRcol, namex=NULL, namey=NULL) {
   colnames(frame1) <- paste("x", colnames(frame1), sep = "_")
-  colnames(frame1)[names(frame1) == "x_SYMBOL"]<- "SYMBOL"
+  colnames(frame1)[names(frame1) == paste0("x_",com_col)]<- paste0(com_col)
   colnames(frame2) <- paste("y", colnames(frame2), sep = "_")
-  colnames(frame2)[names(frame2) == "y_SYMBOL"]<- "SYMBOL"
+  colnames(frame2)[names(frame2) == paste0("y_",com_col)]<- paste0(com_col)
   frame1 <- na.omit(frame1)
   frame2 <- na.omit(frame2)
   filemerge <- Reduce(function(dtf1,dtf2)
