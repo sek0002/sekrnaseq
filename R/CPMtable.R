@@ -18,13 +18,13 @@
 #' @import DESeq2
 #' @import org.Mm.eg.db
 #' @import org.Hs.eg.db
-#' @import EnsDb.Mmusculus.v102
+#' @import EnsDb.Mmusculus.v79
 #' @import EnsDb.Hsapiens.v75
 #' @importFrom AnnotationDbi mapIds
 #' @export
 ### Normalized counts
 
-CPMtable<- function(countdata,sampleinfo, thresh=0.5, keep, group_param, species, isEnsembl="FALSE" ,log=F, human_ensembldb= "EnsDb.Hsapiens.v75", mouse_ensembldb= "EnsDb.Mmusculus.v102"){
+CPMtable<- function(countdata,sampleinfo, thresh=0.5, keep, group_param, species, isEnsembl="FALSE" ,log=F, human_ensembldb= "EnsDb.Hsapiens.v75", mouse_ensembldb= "EnsDb.Mmusculus.v79"){
 #
 #   group_param1 <- eval(parse(text=paste0("~",group_param,sep="")))
 
@@ -32,8 +32,8 @@ CPMtable<- function(countdata,sampleinfo, thresh=0.5, keep, group_param, species
     print("Defaulting to EntrezID")}
   if (human_ensembldb=="EnsDb.Hsapiens.v75"){
     print("Defaulting to EnsDb.Hsapiens.v75, hg19, GRCh37")}
-  if (mouse_ensembldb=="EnsDb.Mmusculus.v102"){
-    print("Defaulting to EnsDb.Mmusculus.v102, mm10, GRCm38")}
+  if (mouse_ensembldb=="EnsDb.Mmusculus.v79"){
+    print("Defaulting to EnsDb.Mmusculus.v79")}
 
   myCPM <- edgeR::cpm(countdata)
   threshold <- myCPM >= thresh
