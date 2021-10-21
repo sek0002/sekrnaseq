@@ -8,8 +8,7 @@
 #' @param thresh Minimum CPM threshold to exclude
 #' @param keep Minimum number of samples below thresh before exclusion (value usually set to number of replciates per group)
 #' @param species "human" or "mouse"
-#' @param genekeytype "entrez" or "ensembl"
-#' @param archived Should be set to FALSE, unless using archived Human Ensembl database
+#' @param isEnsembl TRUE or FALSE, if false defaults to entrezid
 #' @param log Set to true to output normalised LogCPM
 #' @param exp_name Name to call experiment
 #' @param design Design matrix (use model.matrix to generate, see template)
@@ -18,6 +17,8 @@
 #' @param plots Set to TRUE to generate TIFF and PDF volcano and MAplots in Volcano/exp_name
 #' @param qlftest Default=TRUE, set to FALSE for edgeR LRT test
 #' @param ntop default top 100, for MDSplot function only
+#' @param human_ensembldb
+#' @param mouse_ensembldb
 #' @return Table of normalised and filtered DGElist objects for limma/voom and EdgeR
 #'
 #' @import edgeR
