@@ -25,6 +25,8 @@
 #' @import org.Mm.eg.db
 #' @import org.Hs.eg.db
 #' @importFrom AnnotationDbi mapIds
+#' @import EnsDb.Mmusculus.v102
+#' @import EnsDb.Hsapiens.v75
 #' @import limma
 #' @import ggplot2
 #' @import plotly
@@ -37,7 +39,13 @@
 
 
 ### DEscript
-DE_analysis <- function(countdata,sampleinfo, thresh=0.5, keep, group_param, exp_name, design, DEgroup, cont.matrix, species, genekeytype, archived="FALSE", qlftest=T, plots=F) {
+DE_analysis <- function(countdata,sampleinfo, thresh=0.5, keep, group_param, exp_name, design, DEgroup, cont.matrix, species, isEnsembl="FALSE", qlftest=T, plots=F, human_ensembldb= "EnsDb.Hsapiens.v75", mouse_ensembldb= "EnsDb.Mmusculus.v102") {
+  if (isEnsembl==F){
+    print("Defaulting to EntrezID")}
+  if (human_ensembldb=="EnsDb.Hsapiens.v75"){
+    print("Defaulting to EnsDb.Hsapiens.v75, hg19, GRCh37")}
+  if (mouse_ensembldb=="EnsDb.Mmusculus.v102"){
+    print("Defaulting to EnsDb.Mmusculus.v102, mm10, GRCm38")}
 
   list_of_folders<- c("DE","export","GSEA","Heatmaps","MDS","Volcano")
 
@@ -71,18 +79,24 @@ DE_analysis <- function(countdata,sampleinfo, thresh=0.5, keep, group_param, exp
   ## normlalize for composition bias using EdgeR
   y1 <- calcNormFactors(y, method="TMM")
 
-  if(archived=="FALSE") {
+  if(isEnsembl=="FALSE") {
     godb_database<- switch(species, human = org.Hs.eg.db, mouse = org.Mm.eg.db)
-    idtype <- switch(genekeytype, ensembl = "ENSEMBL", entrez = "ENTREZID")
+    idtype <- "ENTREZID"
     gene.ids <- mapIds(godb_database, keys=rownames(y1),
                        keytype=idtype, column="SYMBOL")
     y1$genes <- data.frame(keytype=rownames(y1), SYMBOL=gene.ids)} else {
-      listMarts(host = 'http://grch37.ensembl.org')
-      ensemblarchived <- useMart(host = 'http://grch37.ensembl.org', biomart= "ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl")
-      ensembl <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
-      res <- getBM(c("hgnc_symbol","ensembl_gene_id"), filters = "ensembl_gene_id", values = rownames(y1), mart = ensemblarchived)
-      resunique<- res[!duplicated(res$ensembl_gene_id),]
-      y1$genes <- switch(species, human = data.frame(keytype=rownames(y1), SYMBOL=resunique[,"hgnc_symbol"]), mouse = data.frame(keytype=rownames(y1), SYMBOL=resunique[,"mgi_symbol"]))
+
+      godb_database<- switch(species, human = get(human_ensembldb), mouse = get(mouse_ensembldb))
+      idtype <- "ENSEMBL"
+      gene.ids <- mapIds(godb_database, keys=rownames(y1),
+                         keytype=idtype, column="SYMBOL")
+      y1$genes <- data.frame(keytype=rownames(y1), SYMBOL=gene.ids)
+      # listMarts(host = 'http://grch37.ensembl.org')
+      # ensemblarchived <- useMart(host = 'http://grch37.ensembl.org', biomart= "ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl")
+      # ensembl <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+      # res <- getBM(c("hgnc_symbol","ensembl_gene_id"), filters = "ensembl_gene_id", values = rownames(y1), mart = ensemblarchived)
+      # resunique<- res[!duplicated(res$ensembl_gene_id),]
+      # y1$genes <- switch(species, human = data.frame(keytype=rownames(y1), SYMBOL=resunique[,"hgnc_symbol"]), mouse = data.frame(keytype=rownames(y1), SYMBOL=resunique[,"mgi_symbol"]))
 }
   ### normalize using DEseq2 (DEseq)
   coldata<- data.frame(row.names=colnames(counts.keep))
