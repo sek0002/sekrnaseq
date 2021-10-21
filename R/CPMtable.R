@@ -21,9 +21,17 @@
 #' @export
 ### Normalized counts
 
-CPMtable<- function(countdata,sampleinfo, thresh=0.5, keep, group_param, species, genekeytype, archived="FALSE",log=F){
+CPMtable<- function(countdata,sampleinfo, thresh=0.5, keep, group_param, species, isEnsembl="FALSE" ,log=F, human_ensembldb= "EnsDb.Hsapiens.v75", mouse_ensembldb= "EnsDb.Mmusculus.v102"){
 #
 #   group_param1 <- eval(parse(text=paste0("~",group_param,sep="")))
+
+  if (isEnsembl==F){
+    print("Defaulting to EntrezID")}
+  if (human_ensembldb=="EnsDb.Hsapiens.v75"){
+    print("Defaulting to EnsDb.Hsapiens.v75, hg19, GRCh37")}
+  if (mouse_ensembldb=="EnsDb.Mmusculus.v102"){
+    print("Defaulting to EnsDb.Mmusculus.v102, mm10, GRCm38")}
+
   myCPM <- edgeR::cpm(countdata)
   threshold <- myCPM >= thresh
   keep_rep <- rowSums(threshold) >= keep
@@ -51,23 +59,23 @@ CPMtable<- function(countdata,sampleinfo, thresh=0.5, keep, group_param, species
   normalized.counts <- as.data.frame(counts(dds, normalized=TRUE ))
 
 
-  if(archived=="FALSE") {
+  if(isEnsembl=="FALSE") {
     godb_database<- switch(species, human = org.Hs.eg.db, mouse = org.Mm.eg.db)
-    idtype <- switch(genekeytype, ensembl = "ENSEMBL", entrez = "ENTREZID")
-    gene.ids <- AnnotationDbi::mapIds(godb_database, keys=rownames(nonlogcounts),
+    idtype <- "ENTREZID"
+    gene.ids <- mapIds(godb_database, keys=rownames(y1),
                        keytype=idtype, column="SYMBOL")
-    mappedlist <- data.frame(keytype=rownames(nonlogcounts), SYMBOL=gene.ids)
-    nonlogcounts <- setDT(nonlogcounts, keep.rownames = "keytype")[]
-    nonlogcounts<- merge(nonlogcounts,mappedlist, by="keytype")
-  } else {
-    listMarts(host = 'http://grch37.ensembl.org')
-    ensemblarchived <- useMart(host = 'http://grch37.ensembl.org', biomart= "ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl")
-    ensembl <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
-    res <- getBM(c("hgnc_symbol","ensembl_gene_id"), filters = "ensembl_gene_id", values = rownames(nonlogcounts), mart = ensemblarchived)
-    resunique<- res[!duplicated(res$ensembl_gene_id),]
-    mappedlist <- switch(species, human = data.frame(keytype=rownames(nonlogcounts), SYMBOL=resunique[,"hgnc_symbol"]), mouse = data.frame(keytype=rownames(nonlogcounts), SYMBOL=resunique[,"mgi_symbol"]))
-    nonlogcounts <- setDT(nonlogcounts, keep.rownames = "keytype")[]
-    nonlogcounts<- merge(nonlogcounts,mappedlist, by="keytype")
+    y1$genes <- data.frame(keytype=rownames(y1), SYMBOL=gene.ids)} else {
 
-  }
+      godb_database<- switch(species, human = get(human_ensembldb), mouse = get(mouse_ensembldb))
+      idtype <- "ENSEMBL"
+      gene.ids <- mapIds(godb_database, keys=rownames(y1),
+                         keytype=idtype, column="SYMBOL")
+      y1$genes <- data.frame(keytype=rownames(y1), SYMBOL=gene.ids)
+      # listMarts(host = 'http://grch37.ensembl.org')
+      # ensemblarchived <- useMart(host = 'http://grch37.ensembl.org', biomart= "ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl")
+      # ensembl <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+      # res <- getBM(c("hgnc_symbol","ensembl_gene_id"), filters = "ensembl_gene_id", values = rownames(y1), mart = ensemblarchived)
+      # resunique<- res[!duplicated(res$ensembl_gene_id),]
+      # y1$genes <- switch(species, human = data.frame(keytype=rownames(y1), SYMBOL=resunique[,"hgnc_symbol"]), mouse = data.frame(keytype=rownames(y1), SYMBOL=resunique[,"mgi_symbol"]))
+    }
   return(nonlogcounts)  }
