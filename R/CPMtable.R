@@ -70,7 +70,7 @@ CPMtable<- function(countdata,sampleinfo, thresh=0.5, keep, group_param, species
     y1$genes <- data.frame(keytype=rownames(y1), SYMBOL=gene.ids)} else {
 
       godb_database<- switch(species, human = get(human_ensembldb), mouse = get(mouse_ensembldb))
-      idtype <- "ENSEMBL"
+      idtype <- "GENEID"
       gene.ids <- mapIds(godb_database, keys=rownames(y1),
                          keytype=idtype, column="SYMBOL")
       y1$genes <- data.frame(keytype=rownames(y1), SYMBOL=gene.ids)
