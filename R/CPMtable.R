@@ -30,10 +30,11 @@ CPMtable<- function(countdata,sampleinfo, thresh=0.5, keep, group_param, species
 
   if (isEnsembl==F){
     print("Defaulting to EntrezID")}
-  if (human_ensembldb=="EnsDb.Hsapiens.v75"){
+  if (human_ensembldb=="EnsDb.Hsapiens.v75" & species=="human"){
     print("Defaulting to EnsDb.Hsapiens.v75, hg19, GRCh37")}
-  if (mouse_ensembldb=="EnsDb.Mmusculus.v79"){
+  if (mouse_ensembldb=="EnsDb.Mmusculus.v79" & species=="mouse"){
     print("Defaulting to EnsDb.Mmusculus.v79")}
+
 
   myCPM <- edgeR::cpm(countdata)
   threshold <- myCPM >= thresh
