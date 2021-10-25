@@ -68,7 +68,11 @@ CPMtable<- function(countdata,sampleinfo, thresh=0.5, keep, group_param, species
     idtype <- "ENTREZID"
     gene.ids <- mapIds(godb_database, keys=rownames(y1),
                        keytype=idtype, column="SYMBOL")
-    y1$genes <- data.frame(keytype=rownames(y1), SYMBOL=gene.ids)} else {
+    y1$genes <- data.frame(keytype=rownames(y1), SYMBOL=gene.ids)
+    mappedlist <- data.frame(keytype=rownames(nonlogcounts), SYMBOL=gene.ids)
+    nonlogcounts <- setDT(nonlogcounts, keep.rownames = "keytype")[]
+    nonlogcounts<- merge(nonlogcounts,mappedlist, by="keytype")
+    } else {
 
       godb_database<- switch(species, human = get(human_ensembldb), mouse = get(mouse_ensembldb))
       idtype <- "GENEID"
