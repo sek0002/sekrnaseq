@@ -43,9 +43,9 @@
 DE_analysis <- function(countdata,sampleinfo, thresh=0.5, keep, group_param, exp_name, design, DEgroup, cont.matrix, species, isEnsembl="FALSE", qlftest=T, plots=F, human_ensembldb= "EnsDb.Hsapiens.v75", mouse_ensembldb= "EnsDb.Mmusculus.v79") {
   if (isEnsembl==F){
     print("Defaulting to EntrezID")}
-  if (human_ensembldb=="EnsDb.Hsapiens.v75" & species=="human"){
+  if (human_ensembldb=="EnsDb.Hsapiens.v75" & species=="human" & isEnsembl==T){
     print("Defaulting to EnsDb.Hsapiens.v75, hg19, GRCh37")}
-  if (mouse_ensembldb=="EnsDb.Mmusculus.v79" & species=="mouse"){
+  if (mouse_ensembldb=="EnsDb.Mmusculus.v79" & species=="mouse" & isEnsembl==T){
     print("Defaulting to EnsDb.Mmusculus.v79")}
 
   list_of_folders<- c("DE","export","GSEA","Heatmaps","MDS","Volcano")
