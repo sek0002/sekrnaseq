@@ -30,9 +30,9 @@ CPMtable<- function(countdata,sampleinfo, thresh=0.5, keep, group_param, species
 
   if (isEnsembl==F){
     print("Defaulting to EntrezID")}
-  if (human_ensembldb=="EnsDb.Hsapiens.v75" & species=="human"){
+  if (human_ensembldb=="EnsDb.Hsapiens.v75" & species=="human" & isEnsembl==T){
     print("Defaulting to EnsDb.Hsapiens.v75, hg19, GRCh37")}
-  if (mouse_ensembldb=="EnsDb.Mmusculus.v79" & species=="mouse"){
+  if (mouse_ensembldb=="EnsDb.Mmusculus.v79" & species=="mouse" & isEnsembl==T){
     print("Defaulting to EnsDb.Mmusculus.v79")}
 
 
@@ -75,6 +75,10 @@ CPMtable<- function(countdata,sampleinfo, thresh=0.5, keep, group_param, species
       gene.ids <- mapIds(godb_database, keys=rownames(y1),
                          keytype=idtype, column="SYMBOL")
       y1$genes <- data.frame(keytype=rownames(y1), SYMBOL=gene.ids)
+
+      mappedlist <- data.frame(keytype=rownames(nonlogcounts), SYMBOL=gene.ids)
+      nonlogcounts <- setDT(nonlogcounts, keep.rownames = "keytype")[]
+      nonlogcounts<- merge(nonlogcounts,mappedlist, by="keytype")
       # listMarts(host = 'http://grch37.ensembl.org')
       # ensemblarchived <- useMart(host = 'http://grch37.ensembl.org', biomart= "ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl")
       # ensembl <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
