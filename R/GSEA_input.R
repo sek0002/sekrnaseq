@@ -17,6 +17,7 @@
 #' @import viridis
 #' @import Glimma
 #' @import fgsea
+#' @import clusterProfiler
 #' @export
 
 
