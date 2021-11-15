@@ -50,7 +50,7 @@ gseatest <- function(input,method,species,orderby="logFC",cat =NULL, subcat = NU
     if (is.null(subcat)) {
       gseapathways<-gseapathways%>% dplyr::filter(gs_cat == cat ) %>% dplyr::select(gs_name, gene_symbol)
     } else{
-      gseapathways<-gseapathways%>% dplyr::filter(gs_cat == cat & gs_subcat %in% subcat) %>% dplyr::select(gs_name, gene_symbol)
+      gseapathways<-gseapathways%>% dplyr::filter(gs_cat == cat) %>% dplyr::filter(str_detect(gs_subcat, subcat))  %>% dplyr::select(gs_name, gene_symbol)
     }} else {
       gseapathways<-customGS %>% dplyr::select(gs_name, gene_symbol)
     }
