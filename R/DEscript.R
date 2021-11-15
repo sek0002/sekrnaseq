@@ -265,7 +265,7 @@ DE_analysis <- function(countdata,sampleinfo, thresh=0.5, keep, group_param, exp
   glMDSPlot(y1, labels=labels, groups=groupDE, folder=paste0("MDS/",exp_name))
 
   ### DEseq normalization PCA plot Set to subset by reactive parameter sampleinfo(param_no.), ntop
-  ntop <- 100
+  ntop <- 500
   Pvars <- rowVars(assay(rld))
   select <- order(Pvars, decreasing = TRUE)[seq_len(min(ntop,
                                                         length(Pvars)))]
