@@ -40,8 +40,8 @@
 
 
 ### DEscript
-DE_analysis <- function(countdata,sampleinfo, thresh=0.5, keep, group_param, exp_name, design, DEgroup, cont.matrix, species, isEnsembl="FALSE", qlftest=T, plots=F, human_ensembldb= "EnsDb.Hsapiens.v75", mouse_ensembldb= "EnsDb.Mmusculus.v79") {
-  if (isEnsembl==F){
+DE_analysis <- function(countdata,sampleinfo, thresh=0.5, keep, group_param, exp_name, design, DEgroup, cont.matrix, species, isEnsembl="FALSE", isRefseq="FALSE", qlftest=T, plots=F, human_ensembldb= "EnsDb.Hsapiens.v75", mouse_ensembldb= "EnsDb.Mmusculus.v79") {
+  if (isEnsembl==F & isRefseq==F){
     print("Defaulting to EntrezID")}
   if (human_ensembldb=="EnsDb.Hsapiens.v75" & species=="human" & isEnsembl==T){
     print("Defaulting to EnsDb.Hsapiens.v75, hg19, GRCh37")}
@@ -54,15 +54,15 @@ DE_analysis <- function(countdata,sampleinfo, thresh=0.5, keep, group_param, exp
     dir.create(path = paste0(x,"/",exp_name,"/interactive"), recursive = TRUE)
   }
 
-    dir.create(path = paste0("GSEA/",exp_name,"/H"), recursive = TRUE)
-    dir.create(path = paste0("GSEA/",exp_name,"/C2"), recursive = TRUE)
-    dir.create(path = paste0("GSEA/",exp_name,"/C3"), recursive = TRUE)
-    dir.create(path = paste0("GSEA/",exp_name,"/C5"), recursive = TRUE)
-    dir.create(path = paste0("GSEA/",exp_name,"/C2_CGP"), recursive = TRUE)
-    dir.create(path = paste0("GSEA/",exp_name,"/C3_TFT"), recursive = TRUE)
-    dir.create(path = paste0("GSEA/",exp_name,"/C7"), recursive = TRUE)
-    dir.create(path = paste0("GSEA/",exp_name,"/CHEA_TF"), recursive = TRUE)
-    dir.create(path = paste0("GSEA/",exp_name,"/Lit_chipseq"), recursive = TRUE)
+  dir.create(path = paste0("GSEA/",exp_name,"/H"), recursive = TRUE)
+  dir.create(path = paste0("GSEA/",exp_name,"/C2"), recursive = TRUE)
+  dir.create(path = paste0("GSEA/",exp_name,"/C3"), recursive = TRUE)
+  dir.create(path = paste0("GSEA/",exp_name,"/C5"), recursive = TRUE)
+  dir.create(path = paste0("GSEA/",exp_name,"/C2_CGP"), recursive = TRUE)
+  dir.create(path = paste0("GSEA/",exp_name,"/C3_TFT"), recursive = TRUE)
+  dir.create(path = paste0("GSEA/",exp_name,"/C7"), recursive = TRUE)
+  dir.create(path = paste0("GSEA/",exp_name,"/CHEA_TF"), recursive = TRUE)
+  dir.create(path = paste0("GSEA/",exp_name,"/Lit_chipseq"), recursive = TRUE)
 
   myCPM <- cpm(countdata)
   threshold <- myCPM >= thresh
@@ -80,25 +80,32 @@ DE_analysis <- function(countdata,sampleinfo, thresh=0.5, keep, group_param, exp
   ## normlalize for composition bias using EdgeR
   y1 <- calcNormFactors(y, method="TMM")
 
-  if(isEnsembl=="FALSE") {
+  if(isEnsembl=="TRUE") {
+    godb_database<- switch(species, human = get(human_ensembldb), mouse = get(mouse_ensembldb))
+    idtype <- "GENEID"
+    gene.ids <- mapIds(godb_database, keys=rownames(y1),
+                       keytype=idtype, column="SYMBOL")
+    y1$genes <- data.frame(keytype=rownames(y1), SYMBOL=gene.ids)
+  }
+  if(isRefseq=="TRUE") {
+    godb_database<- switch(species, human = org.Hs.eg.db, mouse = org.Mm.eg.db)
+    idtype <- "REFSEQ"
+    gene.ids <- mapIds(godb_database, keys=rownames(y1),
+                       keytype=idtype, column="SYMBOL")
+    y1$genes <- data.frame(keytype=rownames(y1), SYMBOL=gene.ids)}
+  else {
     godb_database<- switch(species, human = org.Hs.eg.db, mouse = org.Mm.eg.db)
     idtype <- "ENTREZID"
     gene.ids <- mapIds(godb_database, keys=rownames(y1),
                        keytype=idtype, column="SYMBOL")
-    y1$genes <- data.frame(keytype=rownames(y1), SYMBOL=gene.ids)} else {
-
-      godb_database<- switch(species, human = get(human_ensembldb), mouse = get(mouse_ensembldb))
-      idtype <- "GENEID"
-      gene.ids <- mapIds(godb_database, keys=rownames(y1),
-                         keytype=idtype, column="SYMBOL")
-      y1$genes <- data.frame(keytype=rownames(y1), SYMBOL=gene.ids)
-      # listMarts(host = 'http://grch37.ensembl.org')
-      # ensemblarchived <- useMart(host = 'http://grch37.ensembl.org', biomart= "ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl")
-      # ensembl <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
-      # res <- getBM(c("hgnc_symbol","ensembl_gene_id"), filters = "ensembl_gene_id", values = rownames(y1), mart = ensemblarchived)
-      # resunique<- res[!duplicated(res$ensembl_gene_id),]
-      # y1$genes <- switch(species, human = data.frame(keytype=rownames(y1), SYMBOL=resunique[,"hgnc_symbol"]), mouse = data.frame(keytype=rownames(y1), SYMBOL=resunique[,"mgi_symbol"]))
-}
+    y1$genes <- data.frame(keytype=rownames(y1), SYMBOL=gene.ids)
+    # listMarts(host = 'http://grch37.ensembl.org')
+    # ensemblarchived <- useMart(host = 'http://grch37.ensembl.org', biomart= "ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl")
+    # ensembl <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+    # res <- getBM(c("hgnc_symbol","ensembl_gene_id"), filters = "ensembl_gene_id", values = rownames(y1), mart = ensemblarchived)
+    # resunique<- res[!duplicated(res$ensembl_gene_id),]
+    # y1$genes <- switch(species, human = data.frame(keytype=rownames(y1), SYMBOL=resunique[,"hgnc_symbol"]), mouse = data.frame(keytype=rownames(y1), SYMBOL=resunique[,"mgi_symbol"]))
+  }
   ### normalize using DEseq2 (DEseq)
   coldata<- data.frame(row.names=colnames(counts.keep))
   for (i in 2:ncol(sampleinfo)){
@@ -333,7 +340,6 @@ DE_analysis <- function(countdata,sampleinfo, thresh=0.5, keep, group_param, exp
   data_out<- list(voom_file=voom_file,qlf_file=qlf_file)
   return(data_out)
 }
-
 
 
 
