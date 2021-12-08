@@ -23,7 +23,7 @@ rastervolc <- function(data_in,label_peaks,xaxis,yaxis,name_output,exp_name){
 
   # data_in$Threshold <- ifelse(data_in$FDR<=0.05|data_in$logFC <=1 & data_in$logFC >= -1 ,"nochange",
   #                               ifelse(data_in$logFC>1, "Open", "Close"))
-
+  data_in<-data_in%>%arrange(factor(Threshold, levels=c("notsig","Up","Down")))
   if(length(unique(data_in[,"Threshold"])) == 3){
     g1 <- ggplot(data = data_in, aes(x = data_in[,xaxis], y = -log10(data_in[,yaxis]))) +
       geom_point_rast(

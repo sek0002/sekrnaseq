@@ -21,7 +21,7 @@
 ###MAPLOT
 maplotniceqlf <- function(data_in,xaxis="logCPM",yaxis="logFC",name_output,exp_name){
 
-
+  data_in<-data_in%>%arrange(factor(Threshold, levels=c("notsig","Up","Down")))
   # data_in$Threshold <- ifelse(data_in$LogFC <=1 & data_in$LogFC >= -1 ,"nochange",
   #                             ifelse(data_in$logFC>1, "Open", "Close"))
 
@@ -33,7 +33,7 @@ maplotniceqlf <- function(data_in,xaxis="logCPM",yaxis="logFC",name_output,exp_n
         size = 1,
         aes(col = data_in[,"Threshold"])
       ) +
-      scale_colour_manual(values = c("Blue", "Grey", "Green")) +
+      scale_colour_manual(values = c("Blue", "Grey", "Red")) +
       xlab("AveExpr") +
       ylab("-log10(FC)") +
       # ylim(0, 60) +
