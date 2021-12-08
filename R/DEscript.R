@@ -86,7 +86,7 @@ DE_analysis <- function(countdata,sampleinfo, thresh=0.5, keep, group_param, exp
     gene.ids <- mapIds(godb_database, keys=rownames(y1),
                        keytype=idtype, column="SYMBOL")
     y1$genes <- data.frame(keytype=rownames(y1), SYMBOL=gene.ids)
-  }
+  }else{
   if(isRefseq=="TRUE") {
     godb_database<- switch(species, human = org.Hs.eg.db, mouse = org.Mm.eg.db)
     idtype <- "REFSEQ"
@@ -105,7 +105,7 @@ DE_analysis <- function(countdata,sampleinfo, thresh=0.5, keep, group_param, exp
     # res <- getBM(c("hgnc_symbol","ensembl_gene_id"), filters = "ensembl_gene_id", values = rownames(y1), mart = ensemblarchived)
     # resunique<- res[!duplicated(res$ensembl_gene_id),]
     # y1$genes <- switch(species, human = data.frame(keytype=rownames(y1), SYMBOL=resunique[,"hgnc_symbol"]), mouse = data.frame(keytype=rownames(y1), SYMBOL=resunique[,"mgi_symbol"]))
-  }
+  }}
   ### normalize using DEseq2 (DEseq)
   coldata<- data.frame(row.names=colnames(counts.keep))
   for (i in 2:ncol(sampleinfo)){
