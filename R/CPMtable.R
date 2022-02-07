@@ -59,7 +59,7 @@ CPMtable<- function(countdata,sampleinfo, thresh=0.5, keep, group_param, species
 
   dds <- DESeqDataSetFromMatrix(countData=countdata, colData=coldata, design=eval(parse(text=paste0("~",group_param,sep=""))))
   dds <- DESeq(dds)
-  rld <- rlogTransformation(dds)
+  # rld <- rlogTransformation(dds)
   normalized.counts <- as.data.frame(counts(dds, normalized=TRUE ))
 
 
