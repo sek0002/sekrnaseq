@@ -14,8 +14,8 @@
 
 convertMouseGeneList <- function(x){
 
-  human = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
-  mouse = useMart("ensembl", dataset = "mmusculus_gene_ensembl")
+  human = useEnsembl("ensembl",dataset = "hsapiens_gene_ensembl",host = "https://dec2021.archive.ensembl.org/")
+  mouse = useEnsembl("ensembl",dataset = "mmusculus_gene_ensembl",host = "https://dec2021.archive.ensembl.org/")
   genesV2 = getLDS(attributes = c("mgi_symbol"), filters = "mgi_symbol", values = x , mart = mouse, attributesL = c("hgnc_symbol"), martL = human, uniqueRows=T)
   humanx <- unique(genesV2)
   return(humanx)
@@ -24,8 +24,8 @@ convertMouseGeneList <- function(x){
 #' @export
 convertHumanGeneList <- function(x){
 
-  human = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
-  mouse = useMart("ensembl", dataset = "mmusculus_gene_ensembl")
+  human = useEnsembl("ensembl",dataset = "hsapiens_gene_ensembl",host = "https://dec2021.archive.ensembl.org/")
+  mouse = useEnsembl("ensembl",dataset = "mmusculus_gene_ensembl",host = "https://dec2021.archive.ensembl.org/")
   genesV2 = getLDS(attributes = c("hgnc_symbol"), filters = "hgnc_symbol", values = x , mart = human, attributesL = c("mgi_symbol"), martL = mouse, uniqueRows=T)
   humanx <- unique(genesV2)
   return(humanx)
