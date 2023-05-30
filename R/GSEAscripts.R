@@ -104,7 +104,7 @@ gseatest <- function(input,method,species,orderby="logFC",cat =NULL, subcat = NU
         for (genesetID in plotpathway) {
           fig<- gseaplot2(results, geneSetID = genesetID, title = paste0(genesetID))
         ggsave(file=paste0("GSEA/",expname,"/",DEgroup,"_",genesetID,".pdf", sep=""), plot=fig, units="in", width=7, height=6)
-      }}
+      }}}
   return(results_all)
 
 }
