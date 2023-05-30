@@ -98,12 +98,12 @@ gseatest <- function(input,method,species,orderby="logFC",cat =NULL, subcat = NU
   if (plot==T){
     if (is.null(plotpathway)){
       for (genesetID in results$ID) {
-        plot<- gseaplot2(results, geneSetID = paste0(genesetID), title = paste0(genesetID))
-        ggsave(file=paste0("GSEA/",expname,"/",DEgroup,"_",genesetID,".pdf", sep=""), plot=plot, units="in", width=7, height=6)
+        fig<- gseaplot2(results, geneSetID = paste0(genesetID), title = paste0(genesetID))
+        ggsave(file=paste0("GSEA/",expname,"/",DEgroup,"_",genesetID,".pdf", sep=""), plot=fig, units="in", width=7, height=6)
       }} else {
-        for (genesetID in plotpathway)
-          plot<- gseaplot2(results, geneSetID = genesetID, title = paste0(genesetID))
-        ggsave(file=paste0("GSEA/",expname,"/",DEgroup,"_",genesetID,".pdf", sep=""), plot=plot, units="in", width=7, height=6)
+        for (genesetID in plotpathway) {
+          fig<- gseaplot2(results, geneSetID = genesetID, title = paste0(genesetID))
+        ggsave(file=paste0("GSEA/",expname,"/",DEgroup,"_",genesetID,".pdf", sep=""), plot=fig, units="in", width=7, height=6)
       }}
   return(results_all)
 
