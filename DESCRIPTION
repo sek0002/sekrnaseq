@@ -30,7 +30,6 @@ Imports:
     matrixStats,
     fgsea,
     pheatmap,
-    clusterProfiler,
     enrichplot,
     DOSE,
     gridExtra
